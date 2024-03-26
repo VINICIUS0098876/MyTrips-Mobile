@@ -693,12 +693,13 @@ fun Greeting3() {
             )
 
             LazyColumn() {
-                item() {
+                items(2) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
                             .padding(horizontal = 20.dp)
+                            .padding(top = 10.dp)
                     ) {
                         Column(
                             modifier = Modifier
@@ -736,49 +737,7 @@ fun Greeting3() {
                             )
                         }
                     }
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(horizontal = 20.dp)
-                            .padding(top = 10.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                        ) {
-                            Card(
-                                modifier = Modifier
-                                    .height(100.dp)
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            ) {
-                                Image(
-                                    modifier = Modifier,
-                                    painter = painterResource(id = R.drawable.porto),
-                                    contentDescription = "",
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
 
-                            Text(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
-                                color = Color(0xffCF06F0),
-                                fontSize = 18.sp,
-                                text = "Porto, 2022"
-                            )
-                            Text(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
-                                color = Color(0xffA09C9C),
-                                text = "Porto is the second city in Portugal, the capital of the Oporto District, and one of the Iberian Peninsula's major urban areas."
-                            )
-
-                            Text(
-                                modifier = Modifier.padding(start = 240.dp, top = 5.dp),
-                                color = Color(0xffCF06F0),
-                                text = "15 may - 22 may"
-                            )
-                        }
-                    }
                 }
             }
         }
