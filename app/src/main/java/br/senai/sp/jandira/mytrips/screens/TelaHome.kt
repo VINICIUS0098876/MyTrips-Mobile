@@ -18,11 +18,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BeachAccess
 import androidx.compose.material.icons.filled.DownhillSkiing
+import androidx.compose.material.icons.filled.ImageNotSupported
 import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.mytrips.R
+import br.senai.sp.jandira.mytrips.repository.CategoriaRepository
+import br.senai.sp.jandira.mytrips.repository.ViagemRepository
+import br.senai.sp.jandira.mytrips.simplificarData
 import br.senai.sp.jandira.mytrips.ui.theme.MyTripsTheme
 
 @Composable
@@ -56,6 +62,9 @@ fun TelaHome(controleDeNavegacao: NavHostController) {
             var pesquisarState = remember {
                 mutableStateOf("")
             }
+
+            val viagens = ViagemRepository().listarTodasAsViagens(LocalContext.current)
+            val categories = CategoriaRepository().listarCategorias(LocalContext.current)
 
             Column(
                 modifier = Modifier
@@ -143,9 +152,9 @@ fun TelaHome(controleDeNavegacao: NavHostController) {
 
                     Row {
                         LazyRow {
-                            item() {
+                            items(categories) {
                                 Card(
-                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                    modifier = Modifier.padding(start = 8.dp)
                                 ) {
                                     Column(
 
@@ -157,66 +166,13 @@ fun TelaHome(controleDeNavegacao: NavHostController) {
                                     ) {
                                         Icon(
                                             modifier = Modifier.padding(start = 10.dp),
-                                            imageVector = Icons.Default.Landscape,
-                                            contentDescription = "",
-                                            tint = Color.White
-                                        )
-                                        Text(
-                                            text = "Montain",
-                                            color = Color.White
-                                        )
-                                    }
-                                }
-
-                            }
-                            item() {
-                                Card(
-                                    modifier = Modifier.padding(start = 8.dp)
-                                ) {
-                                    Column(
-
-                                        modifier = Modifier
-                                            .size(height = 80.dp, width = 130.dp)
-                                            .background(color = Color(0xffEAABF4))
-                                            .padding(20.dp)
-                                            .padding(start = 20.dp),
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier.padding(start = 10.dp),
-                                            imageVector = Icons.Default.DownhillSkiing,
+                                            imageVector = if(it.icone == null) Icons.Default.ImageNotSupported else it.icone!!,
                                             contentDescription = "",
                                             tint = Color.White
                                         )
                                         Text(
                                             modifier = Modifier.padding(start = 7.dp),
-                                            text = "Snow",
-                                            color = Color.White
-                                        )
-                                    }
-                                }
-
-                            }
-                            item() {
-                                Card(
-                                    modifier = Modifier.padding(start = 8.dp)
-                                ) {
-                                    Column(
-
-                                        modifier = Modifier
-                                            .size(height = 80.dp, width = 130.dp)
-                                            .background(color = Color(0xffEAABF4))
-                                            .padding(20.dp)
-                                            .padding(start = 20.dp),
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier.padding(start = 10.dp),
-                                            imageVector = Icons.Default.BeachAccess,
-                                            contentDescription = "",
-                                            tint = Color.White
-                                        )
-                                        Text(
-                                            modifier = Modifier.padding(start = 7.dp),
-                                            text = "Beach",
+                                            text = "${it.nome}",
                                             color = Color.White
 
                                         )
@@ -267,11 +223,11 @@ fun TelaHome(controleDeNavegacao: NavHostController) {
                     )
 
                     LazyColumn() {
-                        items(2) {
+                        items(viagens) {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(200.dp)
+
                                     .padding(horizontal = 20.dp)
                                     .padding(top = 10.dp)
                             ) {
@@ -286,7 +242,7 @@ fun TelaHome(controleDeNavegacao: NavHostController) {
                                     ) {
                                         Image(
                                             modifier = Modifier,
-                                            painter = painterResource(id = R.drawable.london),
+                                            painter = if(it.imagem == null) painterResource(id = R.drawable.noimage)else it.imagem!!,
                                             contentDescription = "",
                                             contentScale = ContentScale.Crop
                                         )
@@ -299,7 +255,7 @@ fun TelaHome(controleDeNavegacao: NavHostController) {
                                         ),
                                         color = Color(0xffCF06F0),
                                         fontSize = 18.sp,
-                                        text = "London, 2019"
+                                        text = "${it.destino}, ${it.dataChegada.year}"
                                     )
                                     Text(
                                         modifier = Modifier.padding(
@@ -307,14 +263,26 @@ fun TelaHome(controleDeNavegacao: NavHostController) {
                                             vertical = 2.dp
                                         ),
                                         color = Color(0xffA09C9C),
-                                        text = "London is the capital and largest city of  the United Kingdom, with a population of just under 9 million."
+                                        text = it.descricao
                                     )
 
-                                    Text(
-                                        modifier = Modifier.padding(start = 240.dp, top = 5.dp),
-                                        color = Color(0xffCF06F0),
-                                        text = "18 Feb - 21 Feb"
-                                    )
+                                    Row {
+                                        Text(
+                                            modifier = Modifier.padding(start = 4.dp, top = 5.dp),
+                                            color = Color(0xffCF06F0),
+                                            text = simplificarData(it.dataChegada),
+                                            fontSize = 15.sp
+                                        )
+                                        Text(
+                                            modifier = Modifier.padding(start = 4.dp, top = 5.dp),
+                                            color = Color(0xffCF06F0),
+                                            text = simplificarData(it.dataPartida),
+                                            fontSize = 15.sp
+                                        )
+                                    }
+
+
+
                                 }
                             }
 
