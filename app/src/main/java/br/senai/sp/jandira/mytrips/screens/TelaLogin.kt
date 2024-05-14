@@ -38,13 +38,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import br.senai.sp.jandira.mytrips.model.Cadastro
+import br.senai.sp.jandira.mytrips.repository.CadastroRepository
 import br.senai.sp.jandira.mytrips.ui.theme.MyTripsTheme
 
 @Composable
 fun TelaLogin(controleDeNavegacao: NavHostController) {
     MyTripsTheme {
         Surface {
-            val meuContexto = LocalContext.current
+            val cr = CadastroRepository(LocalContext.current)
 
             var nomeState = remember {
                 mutableStateOf("")
@@ -59,6 +61,10 @@ fun TelaLogin(controleDeNavegacao: NavHostController) {
             }
 
             var isErrorState = remember {
+                mutableStateOf(false)
+            }
+
+            var loginError = remember {
                 mutableStateOf(false)
             }
 
@@ -107,10 +113,12 @@ fun TelaLogin(controleDeNavegacao: NavHostController) {
                         value = nomeState.value,
                         onValueChange = {
                             nomeState.value = it
+
                         },
                         modifier = Modifier
                             .size(width = 350.dp, height = 65.dp),//padding(start = 42.dp),
-                        label = { Text(text = "E-mail") },
+                        label = { Text(text = "Nome") },
+
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Filled.Email,
@@ -169,11 +177,12 @@ fun TelaLogin(controleDeNavegacao: NavHostController) {
                                 containerColor = Color(0xffCF06F0)
                             ),
                         onClick = {
-                            if (nomeState.value == "Vinicius" && senhaState.value == "1234") {
-                                controleDeNavegacao.navigate("home")
-                            } else {
+                            val login = cr.logar(email = nomeState.value, senha = senhaState.value)
+                            if(login == null){
                                 isErrorState.value = true
-                                mensagemErroState.value = "Usuário ou senha inválidas!!"
+                            }else{
+                                cr.logar(email = login.email, senha = login.senha)
+                                controleDeNavegacao.navigate("home")
                             }
                         }
                     ) {

@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -49,12 +50,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.mytrips.R
+import br.senai.sp.jandira.mytrips.model.Cadastro
+import br.senai.sp.jandira.mytrips.repository.CadastroRepository
 import br.senai.sp.jandira.mytrips.ui.theme.MyTripsTheme
 
 @Composable
 fun TelaSingUp(controleDeNavegacao: NavHostController) {
     MyTripsTheme {
         Surface {
+            val cr = CadastroRepository(LocalContext.current)
+
             var nomeState = remember {
                 mutableStateOf("")
             }
@@ -72,6 +77,14 @@ fun TelaSingUp(controleDeNavegacao: NavHostController) {
             }
 
             var checkState = remember {
+                mutableStateOf(false)
+            }
+
+            var emailError = remember {
+                mutableStateOf(false)
+            }
+
+            var is18Error = remember {
                 mutableStateOf(false)
             }
 
@@ -198,6 +211,7 @@ fun TelaSingUp(controleDeNavegacao: NavHostController) {
                             .size(width = 350.dp, height = 65.dp)
                             .padding(start = 20.dp, end = 10.dp),//padding(start = 42.dp),
                         label = { Text(text = "E-mail") },
+                        isError = emailError.value,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Filled.Email,
@@ -243,6 +257,7 @@ fun TelaSingUp(controleDeNavegacao: NavHostController) {
 
                     Row {
                         Checkbox(
+
                             checked = checkState.value, onCheckedChange = {
                                 checkState.value = it
                             },
@@ -276,7 +291,22 @@ fun TelaSingUp(controleDeNavegacao: NavHostController) {
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xffCF06F0)
                         ),
-                        onClick = { /*TODO*/ }
+                        onClick = {
+                            val cadastrar = Cadastro(
+                                nome = nomeState.value,
+                                telefone = telefoneState.value,
+                                email = emailState.value,
+                                senha = senhaState.value,
+                                is18 = checkState.value
+                            )
+
+                            if(emailState.value == ""){
+                                emailError.value = true
+                            }else{
+                                cr.cadastrar(cadastrar = cadastrar)
+                                controleDeNavegacao.navigate("login")
+                            }
+                        }
                     ) {
                         Text(
                             modifier = Modifier,
